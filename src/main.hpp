@@ -16,6 +16,7 @@ void handleButton(void);
 void handlePot(void);
 void handleBT(void);
 void getAHTVals(AHTValues *ahtVals);
+void flushIncoming(void);
 
 // Pins
 const int RX_PIN = 2;
@@ -30,6 +31,7 @@ const int SCL_PIN = A5;
 int potValue = -1;
 boolean lightOn = true;
 int currentBrightness;
+int fadeJump = 5;
 
 // Button Vars
 const int DEBOUNCE_DELAY = 50;

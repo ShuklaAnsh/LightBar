@@ -32,19 +32,21 @@ void fade()
 {
   if (lightOn)
   {
-    for (int fadeValue = 0; fadeValue <= currentBrightness; fadeValue += 5)
+    for (int fadeValue = 0; fadeValue <= currentBrightness - fadeJump; fadeValue += fadeJump)
     {
       analogWrite(LIGHT_CTRL_PIN, fadeValue);
       delay(5);
     }
+    analogWrite(LIGHT_CTRL_PIN, currentBrightness);
   }
   else
   {
-    for (int fadeValue = currentBrightness; fadeValue >= 0; fadeValue -= 5)
+    for (int fadeValue = currentBrightness; fadeValue >= fadeJump; fadeValue -= fadeJump)
     {
       analogWrite(LIGHT_CTRL_PIN, fadeValue);
       delay(5);
     }
+    analogWrite(LIGHT_CTRL_PIN, 0);
   }
 }
 
@@ -106,8 +108,10 @@ void handlePot()
 
 void handleBT()
 {
-  if (BTSerial.available() == 2)
+  if (BTSerial.available() == 3)
   {
+    int header = BTSerial.read();
+    if (header != 0xFC) flushIncoming();
     int command = BTSerial.read();
     int value = BTSerial.read();
 
@@ -171,10 +175,6 @@ void handleBT()
     }
   }
 
-  if (Serial.available())
-  {
-    BTSerial.write(Serial.read());
-  }
 }
 
 void getAHTVals(AHTValues *ahtVals)
@@ -183,4 +183,9 @@ void getAHTVals(AHTValues *ahtVals)
   aht.getEvent(&humidity_sensor, &temp_sensor);
   ahtVals->humidity = String(humidity_sensor.relative_humidity);
   ahtVals->temp = String(temp_sensor.temperature);
+}
+
+void flushIncoming() 
+{
+  while (BTSerial.available()) BTSerial.read();
 }
