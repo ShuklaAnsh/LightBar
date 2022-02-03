@@ -137,7 +137,7 @@ void handleBT()
       Serial.println("\nSET BRIGHTNESS");
       Serial.println(value);
       currentBrightness = value;
-      analogWrite(LIGHT_CTRL_PIN, currentBrightness);
+      fade();
       BTSerial.print("B:");
       BTSerial.println(currentBrightness);
       break;
