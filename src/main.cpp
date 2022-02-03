@@ -14,7 +14,6 @@ void setup()
   pinMode(BTN_PIN, INPUT_PULLUP);
   pinMode(LIGHT_CTRL_PIN, OUTPUT);
   currentBrightness = map(analogRead(POT_PIN), 0, 1023, 0, 255);
-  analogWrite(LIGHT_CTRL_PIN, currentBrightness);
   if (!aht.begin())
   {
     Serial.println("AHT not found");
@@ -111,13 +110,13 @@ void handleBT()
   if (BTSerial.available() == 3)
   {
     int header = BTSerial.read();
-    if (header != 0xFC) flushIncoming();
+    if (header != BT_HEADER) flushIncoming();
     int command = BTSerial.read();
     int value = BTSerial.read();
 
     switch (command)
     {
-    case 0x0:
+    case BT_COMMAND::SET_POWER:
       Serial.println("\nSET POWER");
       Serial.println(value);
       if (value == 0)
@@ -133,7 +132,7 @@ void handleBT()
       BTSerial.println(lightOn);
       break;
 
-    case 0x1:
+    case BT_COMMAND::SET_BRIGHTNESS:
       Serial.println("\nSET BRIGHTNESS");
       Serial.println(value);
       currentBrightness = value;
@@ -142,19 +141,19 @@ void handleBT()
       BTSerial.println(currentBrightness);
       break;
 
-    case 0x2:
+    case BT_COMMAND::GET_POWER:
       Serial.println("\nGET POWER");
       BTSerial.print("P:");
       BTSerial.println(lightOn);
       break;
 
-    case 0x3:
+    case BT_COMMAND::GET_BRIGHTNESS:
       Serial.println("\nGET BRIGHTNESS");
       BTSerial.print("B:");
       BTSerial.println(currentBrightness);
       break;
 
-    case 0x4:
+    case BT_COMMAND::GET_AHT_VALUES:
       getAHTVals(&ahtVals);
       Serial.println("\nGET AHT VALUES");
       Serial.print("Temperature: ");

@@ -43,4 +43,14 @@ unsigned long lastDebounceTime = 0; // the last time the output pin was toggled
 // AHT Vars
 AHTValues ahtVals;
 
+// Bluetooth vars
+const int BT_HEADER = 0xFC;
+enum BT_COMMAND {
+  SET_POWER = 0x0,
+  SET_BRIGHTNESS = 0x1,
+  GET_POWER = 0x2,
+  GET_BRIGHTNESS = 0x3,
+  GET_AHT_VALUES = 0x4,
+};
+
 #endif
