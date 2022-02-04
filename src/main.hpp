@@ -35,7 +35,7 @@ int fadeJump = 5;
 
 // Button Vars
 const int DEBOUNCE_DELAY = 50;
-int lastSteadyState = LOW;      // the previous steady state from the input pin
+int lastSteadyState = HIGH;      // the previous steady state from the input pin
 int lastFlickerableState = LOW; // the previous flickerable state from the input pin
 int currentState = -1;
 unsigned long lastDebounceTime = 0; // the last time the output pin was toggled
