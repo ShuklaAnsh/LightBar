@@ -45,12 +45,16 @@ AHTValues ahtVals;
 
 // Bluetooth vars
 const int BT_HEADER = 0xFC;
+const String BT_TX_START = "<<";
+const String BT_TX_END = ">>";
+const String BT_VALUE_DELIM = "|";
 enum BT_COMMAND {
   SET_POWER = 0x0,
   SET_BRIGHTNESS = 0x1,
   GET_POWER = 0x2,
   GET_BRIGHTNESS = 0x3,
   GET_AHT_VALUES = 0x4,
+  GET_ALL = 0x5
 };
 
 #endif

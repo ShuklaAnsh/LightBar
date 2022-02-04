@@ -110,15 +110,16 @@ void handleBT()
   if (BTSerial.available() == 3)
   {
     int header = BTSerial.read();
-    if (header != BT_HEADER) flushIncoming();
+    if (header != BT_HEADER)
+      flushIncoming();
     int command = BTSerial.read();
     int value = BTSerial.read();
+    String resp = "";
 
     switch (command)
     {
     case BT_COMMAND::SET_POWER:
       Serial.println("\nSET POWER");
-      Serial.println(value);
       if (value == 0)
       {
         lightOn = false;
@@ -128,8 +129,8 @@ void handleBT()
         lightOn = true;
       }
       fade();
-      BTSerial.print("P:");
-      BTSerial.println(lightOn);
+      resp.concat("P:");
+      resp.concat(lightOn);
       break;
 
     case BT_COMMAND::SET_BRIGHTNESS:
@@ -137,43 +138,56 @@ void handleBT()
       Serial.println(value);
       currentBrightness = value;
       fade();
-      BTSerial.print("B:");
-      BTSerial.println(currentBrightness);
+      resp.concat("B:");
+      resp.concat(currentBrightness);
       break;
 
     case BT_COMMAND::GET_POWER:
       Serial.println("\nGET POWER");
-      BTSerial.print("P:");
-      BTSerial.println(lightOn);
+      resp.concat("P:");
+      resp.concat(lightOn);
       break;
 
     case BT_COMMAND::GET_BRIGHTNESS:
       Serial.println("\nGET BRIGHTNESS");
-      BTSerial.print("B:");
-      BTSerial.println(currentBrightness);
+      resp.concat("B:");
+      resp.concat(currentBrightness);
       break;
 
     case BT_COMMAND::GET_AHT_VALUES:
       getAHTVals(&ahtVals);
-      Serial.println("\nGET AHT VALUES");
-      Serial.print("Temperature: ");
-      Serial.print(ahtVals.temp);
-      Serial.println(" degrees C");
-      Serial.print("Humidity: ");
-      Serial.print(ahtVals.humidity);
-      Serial.println("% rH");
+      resp.concat("T:");
+      resp.concat(ahtVals.temp);
+      resp.concat(BT_VALUE_DELIM);
+      resp.concat("H:");
+      resp.concat(ahtVals.humidity);
+      break;
 
-      BTSerial.print("T:");
-      BTSerial.println(ahtVals.temp);
-      BTSerial.print("H:");
-      BTSerial.println(ahtVals.humidity);
+    case BT_COMMAND::GET_ALL:
+      getAHTVals(&ahtVals);
+      Serial.println("\nGET ALL");
+
+      resp.concat("P:");
+      resp.concat(lightOn);
+      resp.concat(BT_VALUE_DELIM);
+      resp.concat("B:");
+      resp.concat(currentBrightness);
+      resp.concat(BT_VALUE_DELIM);
+      resp.concat("T:");
+      resp.concat(ahtVals.temp);
+      resp.concat(BT_VALUE_DELIM);
+      resp.concat("H:");
+      resp.concat(ahtVals.humidity);
       break;
 
     default:
+      return;
       break;
     }
-  }
 
+    Serial.println(resp);
+    BTSerial.println(BT_TX_START + resp + BT_TX_END);
+  }
 }
 
 void getAHTVals(AHTValues *ahtVals)
@@ -184,7 +198,8 @@ void getAHTVals(AHTValues *ahtVals)
   ahtVals->temp = String(temp_sensor.temperature);
 }
 
-void flushIncoming() 
+void flushIncoming()
 {
-  while (BTSerial.available()) BTSerial.read();
+  while (BTSerial.available())
+    BTSerial.read();
 }
